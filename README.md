@@ -37,3 +37,7 @@ A modern React template for web applications and games, featuring React 18, Vite
 - TailwindCSS
 - ESLint
 - Javascript
+
+## STARS (yay!)
+
+[![Star History Chart](https://api.star-history.com/svg?repos=ssnnd0/Saxon-Scout&type=Date)](https://www.star-history.com/#ssnnd0/Saxon-Scout&Date)
