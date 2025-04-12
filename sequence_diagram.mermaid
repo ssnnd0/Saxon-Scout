@@ -1,0 +1,173 @@
+sequenceDiagram
+    participant Client as Client Browser
+    participant FE as Frontend Components
+    participant SW as Service Worker
+    participant API as API Service
+    participant Auth as Auth Service
+    participant DataMgr as Data Manager
+    participant FS as File System
+    participant Logger as Logging Service
+    
+    %% User Authentication Flow
+    Client->>FE: Open Application
+    FE->>SW: Register Service Worker
+    SW-->>FE: Service Worker Registered
+    FE->>FE: Display Login Screen
+    Client->>FE: Enter Credentials
+    FE->>API: handleLogin(username, password)
+    API->>Auth: verifyCredentials(username, password)
+    Auth->>DataMgr: getUser(username)
+    DataMgr->>FS: Read User File
+    FS-->>DataMgr: User Data
+    DataMgr-->>Auth: User Object
+    Auth->>Auth: comparePassword(password, hash)
+    Auth-->>API: Authentication Result
+    API->>Auth: generateToken(user)
+    Auth-->>API: JWT Token
+    API-->>FE: Login Response with Token
+    FE->>FE: Store Token in LocalStorage
+    FE->>FE: Redirect to Dashboard
+    
+    %% Load Active Season and Form
+    FE->>API: getActiveSeason()
+    API->>DataMgr: getActiveSeason()
+    DataMgr->>FS: Read Season Files
+    FS-->>DataMgr: Season Data
+    DataMgr-->>API: Active Season
+    API-->>FE: Season Data with Form Template
+    FE->>FE: Render Dashboard
+    
+    %% Match Scouting Form Submission
+    Client->>FE: Fill Scouting Form
+    FE->>FE: validate() Form Data
+    Client->>FE: Submit Form
+    FE->>API: handleSubmitForm(formData)
+    API->>Auth: verifyToken(token)
+    Auth-->>API: User Object
+    API->>DataMgr: saveScoutingEntry(entry)
+    DataMgr->>FS: Write Entry to File
+    FS-->>DataMgr: Save Confirmation
+    DataMgr-->>API: Save Success
+    API->>Logger: logInfo("Form Submitted")
+    API-->>FE: Submission Response
+    FE->>FE: Show Success Message
+    
+    %% Offline Submission
+    Client->>FE: Fill Form (Offline)
+    FE->>FE: validate() Form Data
+    Client->>FE: Submit Form
+    FE->>SW: Store in IndexedDB
+    SW-->>FE: Storage Confirmation
+    FE->>FE: Show Pending Sync Message
+    Note over Client,FE: Internet Reconnects
+    SW->>SW: detect connection
+    SW->>API: handleSubmitForm(cachedData)
+    API->>DataMgr: saveScoutingEntry(entry)
+    DataMgr->>FS: Write Entry to File
+    FS-->>DataMgr: Save Confirmation
+    DataMgr-->>API: Save Success
+    API-->>SW: Submission Response
+    SW->>SW: Remove from IndexedDB
+    
+    %% View Team Performance
+    Client->>FE: Select Team to View
+    FE->>API: getTeamStats(teamId)
+    API->>DataMgr: getEntriesByTeam(teamId)
+    DataMgr->>FS: Read Entry Files
+    FS-->>DataMgr: Entry Data
+    DataMgr-->>API: Team Entries
+    API->>API: calculateTeamStats(entries)
+    API-->>FE: Team Statistics
+    FE->>FE: Render Team Dashboard
+    
+    %% Admin: Season Configuration
+    Client->>FE: Access Admin Portal
+    FE->>API: verifyAdminAccess(token)
+    API->>Auth: verifyToken(token)
+    Auth-->>API: User with Role
+    API->>API: isAuthorized(user, "admin")
+    API-->>FE: Authorization Result
+    FE->>FE: Render Admin Dashboard
+    Client->>FE: Create New Season Config
+    FE->>FE: Build Form Template
+    Client->>FE: Save Configuration
+    FE->>API: handleConfigUpdate(config)
+    API->>Auth: verifyToken(token)
+    Auth-->>API: User with Role
+    API->>API: isAuthorized(user, "admin")
+    API->>DataMgr: saveSeason(season)
+    DataMgr->>FS: Write Season Config File
+    FS-->>DataMgr: Save Confirmation
+    DataMgr-->>API: Save Success
+    API->>Logger: logInfo("Season Config Updated")
+    API-->>FE: Update Response
+    FE->>FE: Show Success Message
+    
+    %% Admin: User Management
+    Client->>FE: Access User Management
+    FE->>API: getAllUsers()
+    API->>Auth: verifyToken(token)
+    Auth-->>API: User with Role
+    API->>API: isAuthorized(user, "admin")
+    API->>DataMgr: getAllUsers()
+    DataMgr->>FS: Read User Files
+    FS-->>DataMgr: User Data
+    DataMgr-->>API: User List
+    API-->>FE: User List
+    FE->>FE: Render User Management
+    Client->>FE: Create New User
+    FE->>API: handleUserManagement("create", userData)
+    API->>Auth: hashPassword(password)
+    Auth-->>API: Password Hash
+    API->>DataMgr: saveUser(user)
+    DataMgr->>FS: Write User File
+    FS-->>DataMgr: Save Confirmation
+    DataMgr-->>API: Save Success
+    API->>Logger: logInfo("User Created")
+    API-->>FE: Creation Response
+    FE->>FE: Update User List
+    
+    %% Data Export
+    Client->>FE: Request Data Export
+    FE->>API: handleExportData(criteria)
+    API->>Auth: verifyToken(token)
+    Auth-->>API: User Object
+    API->>DataMgr: getScoutingEntries(criteria)
+    DataMgr->>FS: Read Entry Files
+    FS-->>DataMgr: Entry Data
+    DataMgr-->>API: Entry List
+    API->>API: exportToCSV(entries)
+    API-->>FE: CSV Data
+    FE->>Client: Download CSV File
+    
+    %% Data Backup
+    Client->>FE: Request System Backup
+    FE->>API: requestBackup()
+    API->>Auth: verifyToken(token)
+    Auth-->>API: User with Role
+    API->>API: isAuthorized(user, "admin")
+    API->>DataMgr: backupData()
+    DataMgr->>FS: Read All Data Files
+    FS-->>DataMgr: All System Data
+    DataMgr->>FS: Write Backup Archive
+    FS-->>DataMgr: Backup Confirmation
+    DataMgr-->>API: Backup Success
+    API-->>FE: Backup Response
+    FE->>Client: Download Backup File
+    
+    %% System Initialization
+    Note over Client,Logger: Application First Run
+    Client->>FE: Launch Application
+    FE->>API: checkSystemInitialization()
+    API->>DataMgr: checkSystemFiles()
+    DataMgr->>FS: Check File Structure
+    FS-->>DataMgr: Missing System Files
+    DataMgr-->>API: Initialization Required
+    API->>API: initializeSystem()
+    API->>DataMgr: createAdminUser(defaultCredentials)
+    DataMgr->>FS: Write Admin User File
+    API->>DataMgr: createDefaultSeason()
+    DataMgr->>FS: Write Season File
+    API->>Logger: logInfo("System Initialized")
+    API-->>FE: Initialization Complete
+    FE->>FE: Display First-Time Setup Guide
