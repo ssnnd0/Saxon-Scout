@@ -37,3 +37,10 @@ A modern React template for web applications and games, featuring React 18, Vite
 - TailwindCSS
 - ESLint
 - Javascript
+
+
+
+## to do list
+- implement TBA APIv3
+- implement google login
+- make the god damn thing work
