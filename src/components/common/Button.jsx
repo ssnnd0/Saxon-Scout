@@ -3,58 +3,92 @@ import PropTypes from 'prop-types';
 
 const Button = ({ 
   children, 
-  onClick, 
-  type = 'button', 
   variant = 'primary', 
   size = 'md', 
-  className = '',
-  disabled = false,
+  onClick, 
+  disabled = false, 
+  type = 'button',
   fullWidth = false,
-  icon = null
+  className = '',
+  icon = null,
+  ...props 
 }) => {
-  // Variant styles
-  const variantStyles = {
-    primary: 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 text-white',
-    secondary: 'bg-gray-600 hover:bg-gray-700 focus:ring-gray-500 text-white',
-    success: 'bg-green-600 hover:bg-green-700 focus:ring-green-500 text-white',
-    danger: 'bg-red-600 hover:bg-red-700 focus:ring-red-500 text-white',
-    warning: 'bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500 text-white',
-    info: 'bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 text-white',
-    outline: 'bg-transparent border border-gray-500 hover:bg-gray-700 text-gray-300 hover:text-white'
-  };
-
-  // Size styles
-  const sizeStyles = {
-    sm: 'py-1 px-2 text-sm',
-    md: 'py-2 px-4',
-    lg: 'py-3 px-6 text-lg'
-  };
-
-  // Disabled style
-  const disabledStyle = disabled ? 'opacity-50 cursor-not-allowed' : '';
+  // Base button styles
+  let buttonClass = 'btn';
   
-  // Width style
-  const widthStyle = fullWidth ? 'w-full' : '';
-
+  // Variant styles
+  switch (variant) {
+    case 'primary':
+      buttonClass += ' btn-primary';
+      break;
+    case 'secondary':
+      buttonClass += ' btn-secondary';
+      break;
+    case 'outline':
+      buttonClass += ' border border-primary-500 text-primary-600 hover:bg-primary-50';
+      break;
+    case 'danger':
+      buttonClass += ' bg-red-500 text-white hover:bg-red-600';
+      break;
+    case 'success':
+      buttonClass += ' bg-green-500 text-white hover:bg-green-600';
+      break;
+    case 'warning':
+      buttonClass += ' bg-yellow-500 text-white hover:bg-yellow-600';
+      break;
+    case 'ghost':
+      buttonClass += ' text-text-primary hover:bg-surface';
+      break;
+    case 'link':
+      buttonClass += ' p-0 hover:underline text-primary-500 hover:text-primary-600';
+      break;
+    default:
+      buttonClass += ' btn-primary';
+  }
+  
+  // Size styles
+  switch (size) {
+    case 'xs':
+      buttonClass += ' text-xs py-1 px-2';
+      break;
+    case 'sm':
+      buttonClass += ' text-sm py-1.5 px-3';
+      break;
+    case 'md':
+      buttonClass += ' text-sm py-2 px-4';
+      break;
+    case 'lg':
+      buttonClass += ' text-base py-2.5 px-5';
+      break;
+    case 'xl':
+      buttonClass += ' text-lg py-3 px-6';
+      break;
+    default:
+      buttonClass += ' text-sm py-2 px-4';
+  }
+  
+  // Full width
+  if (fullWidth) {
+    buttonClass += ' w-full';
+  }
+  
+  // Disabled state
+  if (disabled) {
+    buttonClass += ' opacity-50 cursor-not-allowed';
+  }
+  
+  // Custom className
+  buttonClass += ` ${className}`;
+  
   return (
     <button
       type={type}
+      className={buttonClass}
       onClick={onClick}
       disabled={disabled}
-      className={`
-        ${variantStyles[variant] || variantStyles.primary}
-        ${sizeStyles[size] || sizeStyles.md}
-        ${disabledStyle}
-        ${widthStyle}
-        inline-flex justify-center items-center gap-2
-        rounded-md
-        font-medium
-        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800
-        transition duration-150 ease-in-out
-        ${className}
-      `}
+      {...props}
     >
-      {icon && <span className="inline-block">{icon}</span>}
+      {icon && <span className="mr-2">{icon}</span>}
       {children}
     </button>
   );

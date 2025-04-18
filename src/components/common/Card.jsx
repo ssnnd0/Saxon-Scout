@@ -4,22 +4,24 @@ import PropTypes from 'prop-types';
 const Card = ({ 
   children, 
   title, 
-  className = '',
+  className = '', 
   headerClassName = '',
   bodyClassName = '',
-  footerContent = null
+  footer = null
 }) => {
   return (
-    <div className={`bg-gray-800 border border-gray-700 rounded-lg shadow-md ${className}`}>
+    <div className={`card ${className}`}>
       {title && (
-        <div className={`p-4 border-b border-gray-700 rounded-t-lg ${headerClassName}`}>
-          <h3 className="text-xl font-semibold text-white">{title}</h3>
+        <div className={`border-b border-border pb-3 mb-4 font-medium text-lg ${headerClassName}`}>
+          {title}
         </div>
       )}
-      <div className={`p-5 ${bodyClassName}`}>{children}</div>
-      {footerContent && (
-        <div className="p-4 border-t border-gray-700 rounded-b-lg bg-gray-800">
-          {footerContent}
+      <div className={`${bodyClassName}`}>
+        {children}
+      </div>
+      {footer && (
+        <div className="mt-4 pt-3 border-t border-border">
+          {footer}
         </div>
       )}
     </div>
@@ -32,7 +34,7 @@ Card.propTypes = {
   className: PropTypes.string,
   headerClassName: PropTypes.string,
   bodyClassName: PropTypes.string,
-  footerContent: PropTypes.node
+  footer: PropTypes.node
 };
 
 export default Card;

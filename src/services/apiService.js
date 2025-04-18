@@ -1,98 +1,96 @@
-const TBA_BASE_URL = 'https://www.thebluealliance.com/api/v3';
-const FRC_BASE_URL = 'https://frc-api.firstinspires.org/v3.0';
+import axios from 'axios';
 
-// API service for The Blue Alliance
-export const tbaApi = {
-  // Helper function for TBA API requests
-  request: async (endpoint) => {
-    try {
-      const response = await fetch(`${TBA_BASE_URL}${endpoint}`, {
-        headers: {
-          'X-TBA-Auth-Key': import.meta.env.VITE_BLUE_ALLIANCE_API_KEY,
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Error fetching data: ${response.status}`);
-      }
-      
-      return await response.json();
-    } catch (error) {
-      console.error('API request error:', error);
-      throw error;
-    }
-  },
-  
-  // Get team information
-  getTeam: async (teamNumber) => {
-    return tbaApi.request(`/team/frc${teamNumber}`);
-  },
-  
-  // Get team events for a specific year
-  getTeamEvents: async (teamNumber, year) => {
-    return tbaApi.request(`/team/frc${teamNumber}/events/${year}`);
-  },
-  
-  // Get team matches at an event
-  getTeamEventMatches: async (teamNumber, eventKey) => {
-    return tbaApi.request(`/team/frc${teamNumber}/event/${eventKey}/matches`);
-  },
-  
-  // Get team status at an event
-  getTeamEventStatus: async (teamNumber, eventKey) => {
-    return tbaApi.request(`/team/frc${teamNumber}/event/${eventKey}/status`);
-  },
-  
-  // Get events for a specific year
-  getEvents: async (year) => {
-    return tbaApi.request(`/events/${year}`);
-  },
-  
-  // Get matches for a specific event
-  getEventMatches: async (eventKey) => {
-    return tbaApi.request(`/event/${eventKey}/matches`);
-  },
-  
-  // Get teams at a specific event
-  getEventTeams: async (eventKey) => {
-    return tbaApi.request(`/event/${eventKey}/teams`);
-  },
-};
+// API base URL from environment variable with fallback
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3030';
 
-// API service for FRC Events API
-export const frcApi = {
-  // Helper function for FRC API requests
-  request: async (endpoint, year) => {
+/**
+ * API service for making requests to the backend
+ */
+class ApiService {
+  /**
+   * Get all teams
+   * @returns {Promise<Array>} List of all teams
+   */
+  async getTeams() {
     try {
-      const response = await fetch(`${FRC_BASE_URL}/${year}${endpoint}`, {
-        headers: {
-          'Authorization': `Basic ${import.meta.env.VITE_FRC_EVENT_API_KEY}`,
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Error fetching data: ${response.status}`);
-      }
-      
-      return await response.json();
+      const response = await axios.get(`${API_URL}/teams`);
+      return response.data;
     } catch (error) {
-      console.error('API request error:', error);
-      throw error;
+      console.error("Error fetching teams:", error);
+      throw new Error(error.response?.data?.message || "Failed to fetch teams");
     }
-  },
-  
-  // Get additional event details
-  getEventDetails: async (eventCode, year) => {
-    return frcApi.request(`/events/${eventCode}`, year);
-  },
-  
-  // Get event rankings
-  getEventRankings: async (eventCode, year) => {
-    return frcApi.request(`/rankings/${eventCode}`, year);
-  },
-  
-  // Get event schedule
-  getEventSchedule: async (eventCode, year, tournamentLevel = 'qual') => {
-    return frcApi.request(`/schedule/${eventCode}/${tournamentLevel}`, year);
-  },
-}; 
+  }
+
+  /**
+   * Get data for a specific team by team number
+   * @param {string} teamNumber - The team number to fetch
+   * @returns {Promise<object>} Team data or error
+   */
+  async getTeamData(teamNumber) {
+    try {
+      const response = await axios.get(`${API_URL}/teamData/${teamNumber}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching data for team ${teamNumber}:`, error);
+      throw new Error(error.response?.data?.message || `Failed to fetch data for team ${teamNumber}`);
+    }
+  }
+
+  /**
+   * Get performance data for all teams
+   * @returns {Promise<Array>} Performance data for all teams
+   */
+  async getTeamPerformanceData() {
+    try {
+      const response = await axios.get(`${API_URL}/teamPerformanceData`);
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error fetching team performance data: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get all scouting entries
+   * @returns {Promise<Array>} All scouting entries
+   */
+  async getScoutingEntries() {
+    try {
+      const response = await axios.get(`${API_URL}/scoutingEntries`);
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error fetching scouting entries: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get current season data
+   * @returns {Promise<object>} Current season data
+   */
+  async getCurrentSeason() {
+    try {
+      const response = await axios.get(`${API_URL}/currentSeason`);
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error fetching current season: ${error.message}`);
+    }
+  }
+
+  /**
+   * Add a new scouting entry
+   * @param {object} entry - The entry to add
+   * @returns {Promise<object>} The added entry with an ID
+   */
+  async addScoutingEntry(entry) {
+    try {
+      const response = await axios.post(`${API_URL}/scoutingEntries`, {
+        ...entry,
+        timestamp: new Date().toISOString(),
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error adding scouting entry: ${error.message}`);
+    }
+  }
+}
+
+export default new ApiService(); 

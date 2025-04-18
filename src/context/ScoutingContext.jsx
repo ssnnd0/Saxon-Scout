@@ -5,6 +5,8 @@ import { useAuth } from './AuthContext';
 
 // Create the scouting context
 const ScoutingContext = createContext(undefined);
+// Export the context
+export { ScoutingContext };
 
 export const useScouting = () => {
   const context = useContext(ScoutingContext);
