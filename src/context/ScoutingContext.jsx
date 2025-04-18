@@ -4,9 +4,15 @@ import axios from 'axios';
 import { useAuth } from './AuthContext';
 
 // Create the scouting context
-export const ScoutingContext = createContext();
+const ScoutingContext = createContext(undefined);
 
-export const useScouting = () => useContext(ScoutingContext);
+export const useScouting = () => {
+  const context = useContext(ScoutingContext);
+  if (context === undefined) {
+    throw new Error('useScouting must be used within a ScoutingProvider');
+  }
+  return context;
+};
 
 export const ScoutingProvider = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -16,9 +22,34 @@ export const ScoutingProvider = ({ children }) => {
   const [seasons, setSeasons] = useState([]);
   const [teams, setTeams] = useState([]);
   const [matches, setMatches] = useState([]);
-  const [scoutingData, setScoutingData] = useState([]);
+  const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Load entries from localStorage on initial render
+  useEffect(() => {
+    try {
+      const storedEntries = localStorage.getItem('scoutingEntries');
+      if (storedEntries) {
+        setEntries(JSON.parse(storedEntries));
+      }
+    } catch (err) {
+      setError('Failed to load scouting data from storage');
+      console.error('Error loading scouting data:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Save entries to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem('scoutingEntries', JSON.stringify(entries));
+    } catch (err) {
+      setError('Failed to save scouting data to storage');
+      console.error('Error saving scouting data:', err);
+    }
+  }, [entries]);
 
   // Fetch current season when authenticated
   useEffect(() => {
@@ -112,7 +143,7 @@ export const ScoutingProvider = ({ children }) => {
         : `/api/scouting?seasonId=${seasonId}`;
       
       const res = await axios.get(url);
-      setScoutingData(res.data);
+      setEntries(res.data);
       return res.data;
     } catch (err) {
       console.error('Error fetching scouting data:', err);
@@ -130,7 +161,7 @@ export const ScoutingProvider = ({ children }) => {
       const res = await axios.post('/api/scouting', entryData);
       
       // Update local data state with the new entry
-      setScoutingData([...scoutingData, res.data]);
+      setEntries([...entries, res.data]);
       
       return res.data;
     } catch (err) {
@@ -144,7 +175,7 @@ export const ScoutingProvider = ({ children }) => {
         
         // Add to current data with synced=false flag
         const newEntry = { ...entryData, _id: `offline_${Date.now()}`, synced: false };
-        setScoutingData([...scoutingData, newEntry]);
+        setEntries([...entries, newEntry]);
         
         return newEntry;
       }
@@ -169,8 +200,8 @@ export const ScoutingProvider = ({ children }) => {
       localStorage.removeItem('saxonScoutingOfflineEntries');
       
       // Update scouting data with newly synced entries
-      const newData = scoutingData.filter(entry => entry.synced !== false);
-      setScoutingData([...newData, ...res.data.entries]);
+      const newData = entries.filter(entry => entry.synced !== false);
+      setEntries([...newData, ...res.data.entries]);
       
       return res.data;
     } catch (err) {
@@ -185,29 +216,75 @@ export const ScoutingProvider = ({ children }) => {
   // Clear error
   const clearError = () => setError(null);
 
-  return (
-    <ScoutingContext.Provider
-      value={{
-        currentSeason,
-        scoutingConfig,
-        seasons,
-        teams,
-        matches,
-        scoutingData,
-        loading,
-        error,
-        fetchSeasons,
-        fetchTeams,
-        fetchMatches,
-        fetchScoutingData,
-        submitScoutingEntry,
-        syncOfflineEntries,
-        clearError,
-      }}
-    >
-      {children}
-    </ScoutingContext.Provider>
-  );
+  const addEntry = (entry) => {
+    setError(null);
+    try {
+      // Generate a unique ID if one isn't provided
+      const newEntry = entry.id ? entry : { ...entry, id: Date.now().toString() };
+      setEntries(prevEntries => [...prevEntries, newEntry]);
+    } catch (err) {
+      setError('Failed to add scouting entry');
+      console.error('Error adding entry:', err);
+    }
+  };
+
+  const getEntriesByTeam = (teamKey) => {
+    return entries.filter(entry => entry.teamKey === teamKey);
+  };
+
+  const getEntriesByEvent = (eventKey) => {
+    return entries.filter(entry => entry.eventKey === eventKey);
+  };
+
+  const getEntry = (id) => {
+    return entries.find(entry => entry.id === id);
+  };
+
+  const deleteEntry = (id) => {
+    setError(null);
+    try {
+      setEntries(prevEntries => prevEntries.filter(entry => entry.id !== id));
+    } catch (err) {
+      setError('Failed to delete scouting entry');
+      console.error('Error deleting entry:', err);
+    }
+  };
+
+  const clearAllEntries = () => {
+    setError(null);
+    try {
+      setEntries([]);
+    } catch (err) {
+      setError('Failed to clear scouting data');
+      console.error('Error clearing entries:', err);
+    }
+  };
+
+  const value = {
+    currentSeason,
+    scoutingConfig,
+    seasons,
+    teams,
+    matches,
+    entries,
+    loading,
+    error,
+    fetchSeasons,
+    fetchTeams,
+    fetchMatches,
+    fetchScoutingData,
+    submitScoutingEntry,
+    syncOfflineEntries,
+    clearError,
+    addEntry,
+    getEntriesByTeam,
+    getEntriesByEvent,
+    getEntry,
+    deleteEntry,
+    clearAllEntries,
+  };
+
+  return <ScoutingContext.Provider value={value}>{children}</ScoutingContext.Provider>;
 };
 
 ScoutingProvider.propTypes = {
