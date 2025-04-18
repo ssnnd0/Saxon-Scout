@@ -1,46 +1,74 @@
-# React ReadME Template
+# Saxon Scout
 
-A modern React template for web applications and games, featuring React 18, Vite, TailwindCSS, and Material UI.
+A scouting application for FIRST Robotics Competition teams.
 
-## Project Structure
+## Features
 
+- Team and event search
+- Match data collection
+- Scouting reports
+- Data visualization
+
+## Development Setup
+
+### Prerequisites
+
+- Node.js (v18+)
+- pnpm (v8+)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/Saxon-Scout.git
+   cd Saxon-Scout
+   ```
+
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+
+3. Create a `.env` file in the root directory with your API keys:
+   ```
+   VITE_BLUE_ALLIANCE_API_KEY=your_blue_alliance_api_key
+   VITE_FRC_EVENT_API_KEY=your_frc_event_api_key
+   ```
+
+4. Start the development server:
+   ```bash
+   pnpm dev
+   ```
+
+## Troubleshooting
+
+### Lucide Icons Not Loading in Development
+
+This project includes special configuration to handle known issues with Lucide icons in Vite development mode:
+
+1. We use direct imports for icons from the dist directory
+2. We've configured Vite to alias the icons path correctly
+3. A wrapper component is provided for dynamic icon loading
+
+If you encounter icon loading issues:
+
+- Make sure ad blockers are disabled for localhost
+- Try using the import approach shown in `src/IconExample.jsx`
+- Use the `LucideIconWrapper` component for dynamic icon loading
+
+### Common Issues
+
+- **White screen in development**: This could be caused by ad blockers blocking the Fingerprint icon. Disable your ad blocker for localhost or avoid using this specific icon.
+- **Module loading errors**: Make sure you're using the correct import paths as shown in the examples.
+
+## Building for Production
+
+```bash
+pnpm build
 ```
-├── src/
-│   ├── App.jsx          # Main application component
-│   ├── main.jsx         # Application entry point
-│   └── index.css        # Global styles (Tailwind)
-├── public/              # Static assets
-├── index.html           # HTML template
-├── vite.config.js       # Vite configuration
-├── tailwind.config.js   # Tailwind configuration
-├── postcss.config.js    # PostCSS configuration
-└── eslint.config.js     # ESLint configuration
-```
 
-## Development Guidelines
+The build outputs will be in the `dist` directory.
 
-- Modify `index.html` and `src/App.jsx` as needed
-- Create new folders or files in `src/` directory as needed
-- Style components using TailwindCSS utility classes
-- Avoid modifying `src/main.jsx` and `src/index.css`
-- Only modify `vite.config.js` if absolutely necessary
+## License
 
-## Available Scripts
-- `pnpm install` - Install dependencies
-- `pnpm run dev` - Start development server
-- `pnpm run lint` - Lint source files
-
-## Tech Stack
-
-- React
-- Vite
-- TailwindCSS
-- ESLint
-- Javascript
-
-
-
-## to do list
-- implement TBA APIv3
-- implement google login
-- make the god damn thing work
+This project is licensed under the MIT License - see the LICENSE file for details.

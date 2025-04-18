@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import HomePage from './pages/HomePage';
+import IconExample from './IconExample';
 import { ApiProvider } from './context/ApiContext';
 import { ScoutingProvider } from './context/ScoutingContext';
 
@@ -15,6 +16,7 @@ function App() {
             <main className="flex-grow bg-gray-50">
               <Routes>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/icons" element={<IconExample />} />
                 {/* Add routes for other pages once converted */}
               </Routes>
             </main>
