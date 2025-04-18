@@ -76,12 +76,6 @@ Example response:
 ```json
 [
   {
-    "number": 611,
-    "name": "Warp 7",
-    "location": "West Chicago, Illinois, USA",
-    "rookieYear": 2001
-  },
-  {
     "number": 254,
     "name": "The Cheesy Poofs",
     "location": "San Jose, California, USA",
@@ -97,7 +91,7 @@ Returns information about a specific team.
 Example response:
 ```json
 {
-  "team_number": 611,
+  "team_number": 865,
   "nickname": "Warp 7",
   "name": "Compass Automation & West Chicago Community High School",
   "city": "West Chicago",
