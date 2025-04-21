@@ -1,32 +1,23 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { VitePWA } from 'vite-plugin-pwa'
-import { fileURLToPath } from 'url'
-import path from 'path'
+// vite.config.js
+import path from 'path';
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  base: '/',
   plugins: [react()],
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:5000',
-        changeOrigin: true,
-        secure: false
-      }
-    }
-  },
   resolve: {
     alias: {
-      // Fix for Lucide icons loading issues in development
-      'lucide-react/icons': fileURLToPath(new URL('./node_modules/lucide-react/dist/esm/icons', import.meta.url)),
-      
-      // Regular extensions
-      extensions: ['.js', '.jsx', '.json']
-    }
+      '@': path.resolve(__dirname, './src'),
+    },
   },
-  optimizeDeps: {
-    include: ['lucide-react']
-  }
-})
+  server: {
+    port: 3000,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
+  },
+});
