@@ -9,7 +9,8 @@
 ░  ░  ░    ░   ▒    ░    ░  ░ ░ ░ ▒     ░   ░ ░    ░  ░  ░  ░        ░ ░ ░ ▒   ░░░ ░ ░   ░
       ░        ░  ░ ░    ░      ░ ░           ░          ░  ░ ░          ░ ░     ░
                                                             ░
-                                                            '''
+'''
+                                                            
 This guide explains how to set up and run Saxon Scout with a real API server.
 
 ## Project Overview
