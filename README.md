@@ -82,7 +82,7 @@ Scouting Entries: Saved directly in your browser's Local Storage. This means:
 - Data will be exported once connected to internet
 
 
-### Key Technologies
+## Key Technologies
 React
 React Router
 Tailwind CSS
