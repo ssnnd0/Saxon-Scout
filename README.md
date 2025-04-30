@@ -11,13 +11,14 @@ Saxon Scout is a modern scouting application designed for FIRST Robotics Competi
 *   Local storage for scouting entries (data stays on the device).
 *   Dashboard to view summarized scouting statistics.
 *   Theme switching (Light, Dark, Blue, Grey).
-*   Integration with The Blue Alliance (TBA) API v3.
+*   Integration with The Blue Alliance (TBA) API v3 and FRC API.
 
 ## Setup Requirements
 
 *   Node.js (v16 or later recommended)
 *   npm or pnpm (pnpm is recommended)
 *   A The Blue Alliance (TBA) API Key (v3)
+*   A FRC API Key
 
 ## Installation and Setup
 
@@ -78,6 +79,7 @@ Scouting Entries: Saved directly in your browser's Local Storage. This means:
 - Data is not automatically shared between users or devices.
 - Clearing browser data will erase all saved scouting entries.
 - Use the Export Data feature (when implemented) to back up your scouting data.
+- Data will be exported once connected to internet
 
 
 ### Key Technologies
