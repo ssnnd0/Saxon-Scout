@@ -1,4 +1,4 @@
-```
+<pre>
   █████████                                                █████████                                █████
  ███░░░░░███                                              ███░░░░░███                              ░░███
 ░███    ░░░   ██████   █████ █████  ██████  ████████     ░███    ░░░   ██████   ██████  █████ ████ ███████
@@ -7,8 +7,7 @@
  ███    ░███ ███░░███   ███░░░███ ░███ ░███ ░███ ░███     ███    ░███░███  ███░███ ░███ ░███ ░███   ░███ ███
 ░░█████████ ░░████████ █████ █████░░██████  ████ █████   ░░█████████ ░░██████ ░░██████  ░░████████  ░░█████
  ░░░░░░░░░   ░░░░░░░░ ░░░░░ ░░░░░  ░░░░░░  ░░░░ ░░░░░     ░░░░░░░░░   ░░░░░░   ░░░░░░    ░░░░░░░░    ░░░░░
-
-```
+</pre>
 # Saxon Scout - FRC Scouting Application
 
 Saxon Scout is a modern scouting application designed for FIRST Robotics Competition teams. It allows teams to view FRC data from The Blue Alliance (TBA) and collect custom match scouting data locally.
